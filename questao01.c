@@ -1,5 +1,12 @@
 /*
 
+Projeto de Threads 2020.3
+Data: 21/10/20
+Grupo:  Allan Soares Vasconcelos <asv>
+        Amanda Lima Lassere <all2>
+        Macio Monteiro de Meneses Jr <mmmj>
+        Maria Isabel Fernandes dos Santos <mifs>
+
 1. Você deverá criar um programa usando pthreads, 
 no qual n threads deverão incrementar um contador global  
 até o número 1.000.000.  
@@ -13,70 +20,52 @@ foi alcançado e todas as threads deverão finalizar a execução.
 #include <stdlib.h>
 
 long contador = 0;      //Contador Global
+pthread_mutex_t myMutex = PTHREAD_MUTEX_INITIALIZER;  //Mutex que sera feito para impedir a condição de corrida!
 
-void *inc(void *threadid){
+void* inc(void *threadid){  //Função que será realizada pelas Threads 
 
-    int threadID = *((int *)threadID);
+  int tid = *((int *)threadid);   
+  printf("Thread #%d inicializando...\n", tid); 
+
+  while(contador < 1000000){
+
+    pthread_mutex_lock(&myMutex);
     contador++;
-    if(contador >= 1000000){
+    //printf("Thread: [%d] colocou contador em: [%ld]\n", tid, contador); //Somente para Debugar!
 
-        printf("A Thread: #%d atingiu o numero 1000000!\n", threadID); 
-        pthread_exit(NULL);
+    if(contador == 1000000){
+
+      printf("A Thread: #%d atingiu o numero 1000000!\n", tid); 
+
     }
+
+    pthread_mutex_unlock(&myMutex);
+  }
+  pthread_exit(NULL);
 }
 
 int main (int argc, char *argv[]){   
 
-    pthread_t *threads;
-    int *taskids;
-    int qtdThreads = 0, i = 0, threadsAtual;
+  pthread_t *threads;
+  int *taskids;
+  int qtdThreads,threadCreator,i;
 
-    scanf("%d", &qtdThreads);
-    threads = (pthread_t*) malloc(qtdThreads*sizeof(pthread_t));
-    taskids = (int *) malloc(qtdThreads*sizeof(int));
+  scanf("%d", &qtdThreads);
+  threads = (pthread_t*) malloc(qtdThreads*sizeof(pthread_t));
+  taskids = (int *) malloc(qtdThreads*sizeof(int));
 
-    for(i = 0; i < qtdThreads; i++){
+  for(i = 0; i < qtdThreads; i++){  
 
-	    printf("No main: criando thread %d\n", i);
-        taskids[i] = i;
-        threadsAtual = pthread_create(&(threads[i]), NULL, inc, (void *) taskids[i]);  
+    taskids[i] = i;
+	  printf("Main: criando thread #%d\n", i);   //Somente Debugando!   
+    threadCreator = pthread_create(&threads[i], NULL, inc, (void *) &taskids[i]);     
 
-        if (threadsAtual){      
+    if (threadCreator){  //Garantir que a Thread foi criada corretamente!
 
-            printf("ERRO; código de retorno é %d\n", threadsAtual);         
-            exit(-1);   
+      printf("ERRO; código de retorno é %d\n", threadCreator);         
+      exit(-1);  
 
-        }   
-    }
-
+    }   
+  }   
   pthread_exit(NULL);
 }
-
-// gcc -pthread questao01.c -o questao01  COMPILANDO
-// ./questao01 EXECUTANDO
-
-/*
-
-void *inc(void *threadid){
-  int i = 0; 
-  for(; i < 9000000; i++) { 
-    contador++; 
-   }
-}
-void *dec(void *threadid){   
-  int i = 0;
-  for(; i < 9000000; i++) { 
-    contador--; 
-   }
-}
-int main (int argc, char *argv[]){   
-  pthread_t thread1, thread2;   
-  pthread_create(&thread1, NULL, inc, NULL); 
-  pthread_create(&thread2, NULL, dec, NULL); 
-  pthread_join(thread1, NULL);
-  pthread_join(thread2, NULL); 
-  printf("Valor final do contador: %ld\n", contador);
-  pthread_exit(NULL);
-}
-
-*/
