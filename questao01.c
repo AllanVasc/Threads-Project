@@ -69,3 +69,5 @@ int main (int argc, char *argv[]){
   }   
   pthread_exit(NULL);
 }
+
+// gcc -pthread questao01.c -o questao01 && ./questao01 //COMPILAR e EXECUTAR!
