@@ -34,6 +34,15 @@ int qtdThreads, tamString1, tamString2;
 int totalSubStrings = 0;    //Variavel Global que sera incrementada!
 pthread_mutex_t myMutex = PTHREAD_MUTEX_INITIALIZER;  //Mutex que sera feito para impedir a condição de corrida!
 
+/* 
+
+Para a realização dessa questão, foi feito um algoritmo simples para dividir a String em várias substrings,
+com isso, fazemos cada thread contar localmente a ocorrencia de uma substring na outra, e quando for para 
+juntar o resultado ao contador global fazemos uso do Mutex para evitar a condição de corrida, garantindo
+que somente uma thread a modifique por vez.
+
+*/
+
 void* quantidade_substring(void * threadid){  //Função que será realizada pelas Threads 
 
     int tid = *((int *)threadid); 

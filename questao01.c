@@ -22,6 +22,13 @@ foi alcançado e todas as threads deverão finalizar a execução.
 long contador = 0;      //Contador Global
 pthread_mutex_t myMutex = PTHREAD_MUTEX_INITIALIZER;  //Mutex que sera feito para impedir a condição de corrida!
 
+/* 
+
+Para a realização dessa questão, foi realizada a criação de um Mutex para impedir a condição de corrida ao acessar
+a variavel global contador, garantindo que somente uma thread a modifique por vez.
+
+*/
+
 void* inc(void *threadid){  //Função que será realizada pelas Threads 
 
   int tid = *((int *)threadid);   
