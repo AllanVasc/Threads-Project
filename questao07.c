@@ -38,7 +38,7 @@ int qtdLinhas = 0, qtdColunas = 0;
 
 /* 
 
-Para a realizar essa questão a dividimos por partes, primeira parte nos fazemos toda a leitura dos dados pelo arquivo,
+Para realizar essa questão a dividimos por partes, primeira parte nos fazemos toda a leitura dos dados pelo arquivo,
 depois nos manipulamos os dados o salvando em bitMapOutput (Não sendo necessario o uso de Mutex) e por finalizar o 
 salvamos em um arquivo de Output.
 

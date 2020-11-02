@@ -44,7 +44,6 @@ X(i) ela sera responsavel por calcular, sendo cada thread responsavel pelo X(ID 
 
 */
 
-
 void* jacobi(void *threadid){  //Função que será realizada pelas Threads 
 
     int tid = *((int *)threadid);   
