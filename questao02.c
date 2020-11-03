@@ -23,6 +23,7 @@ seguinte formato:
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <unistd.h>
 
 #define QTD_CHAR_LINHA 25   //Modificar aqui para permitir tabelas maiores! 
 #define QTD_COLORS 8
@@ -35,7 +36,7 @@ char reset[10] = "\e[0m";
 
 pthread_mutex_t *myVectorMutex;  //Vetor de Mutex que sera feito para impedir a condição de corrida!
 char **tabelaOutput;            //Variavel Global onde ira sofrer as modificações das threads!!
-int qtdThreads, qtdArquivos;
+int qtdThreads, qtdArquivos, qtdLinhas;
 
 /* 
 
@@ -50,8 +51,9 @@ void* changeTable(void *threadid){  //Função que será realizada pelas Threads
     FILE * arquivoEntrada;
     char nomeArquivoInput[20];
     char nomeArquivoInputAux[20];
-    char msgAtual[30];
-    int i, linhaAtual, modifiquei;
+    char codigo[QTD_CHAR_LINHA + 1], localizacao[QTD_CHAR_LINHA + 1], horario[QTD_CHAR_LINHA + 1];
+    char msgFormatada[QTD_CHAR_LINHA + 1];
+    int i, j, linhaAtual, modifiquei, qtdEspacos;
 
     for(i = tid; i < qtdArquivos; i += qtdThreads){  //Cada Thread ficara responsavel pelo TID % qtdArquivo
 
@@ -72,15 +74,39 @@ void* changeTable(void *threadid){  //Função que será realizada pelas Threads
         while(!feof(arquivoEntrada)){     //Realizando a leitura de todo o arquivo
 
             modifiquei = 0;
-            fscanf(arquivoEntrada, "%d", &linhaAtual);
-            fscanf(arquivoEntrada, "%[^\n]", msgAtual);
+            fscanf(arquivoEntrada, "%d ", &linhaAtual);
+            fscanf(arquivoEntrada, "%s %s %s ", codigo, localizacao, horario);
+
+            strcpy(msgFormatada, codigo); //Formatando a linha!
+            strcat(msgFormatada, " ");
+            strcat(msgFormatada, localizacao);
+
+            qtdEspacos = QTD_CHAR_LINHA - (strlen(codigo) + 1 + strlen(localizacao) + strlen(horario));
+
+            for(j = 0; j < qtdEspacos; j++){
+
+                strcat(msgFormatada, " ");
+
+            }
+
+            strcat(msgFormatada, horario);
+
+            //printf("%s\n", msgFormatada);
 
             while(modifiquei == 0){     //Vai realizar a mudança na variavel global!
 
                 if ( pthread_mutex_trylock(&myVectorMutex[linhaAtual]) == 0){
                     
-                    strcpy(tabelaOutput[linhaAtual], msgAtual);
-                    //printf("%s" "%s" "%s\n", colors[linhaAtual % QTD_COLORS], tabelaOutput[linhaAtual], reset);
+                    strcpy(tabelaOutput[linhaAtual], msgFormatada);
+
+                    system("clear");    //Realizando o print!
+                    for(j = 0; j < qtdLinhas; j++){
+
+                        printf("%s" "%s" "%s\n", colors[j % QTD_COLORS], tabelaOutput[j], reset);
+
+                   }
+                    
+                    sleep(2);
                     pthread_mutex_unlock(&myVectorMutex[linhaAtual]);
                     modifiquei = 1;
                 }
@@ -99,7 +125,7 @@ int main (int argc, char *argv[]){
 
     pthread_t *threads;
     int *taskids;
-    int qtdLinhas, threadCreator;
+    int threadCreator;
     int i;
 
     printf("Digite a quantidade de Arquivos a serem lidos:\n");
@@ -148,7 +174,7 @@ int main (int argc, char *argv[]){
 
     for(i = 0; i < qtdLinhas; i++){
 
-        tabelaOutput[i] = (char *) malloc(QTD_CHAR_LINHA*sizeof(char));
+        tabelaOutput[i] = (char *) malloc((QTD_CHAR_LINHA + 1)*sizeof(char));
         strcpy(tabelaOutput[i], "XXXXXX -----------  XX:XX");
 
     }
@@ -157,8 +183,7 @@ int main (int argc, char *argv[]){
 
     for(i = 0; i < qtdThreads; i++){    //Realizar a criação das threads!  
         
-        taskids[i] = i;
-	    printf("Main: criando thread #%d\n", i);   //Somente Debugando!   
+        taskids[i] = i; 
         threadCreator = pthread_create(&threads[i], NULL, changeTable, (void *) &taskids[i]);     
 
         if (threadCreator){  //Garantir que a Thread foi criada corretamente!
@@ -174,13 +199,14 @@ int main (int argc, char *argv[]){
     for(i = 0; i < qtdThreads; i++) {   //Necessario esperar todas as threads finalizarem para colocar o resultado final!
 
         pthread_join(threads[i], NULL);
-        printf("Thread #%d finalizada...\n", i);
 
     }
 
-    for(i = 0; i < qtdLinhas; i++){ //Debugando!
+    system("clear");    //Debugando!
 
-        printf("%s\n", tabelaOutput[i]);
+    for(i = 0; i < qtdLinhas; i++){ 
+
+        printf("%s" "%s" "%s\n", colors[i % QTD_COLORS], tabelaOutput[i], reset);
 
     }
 
