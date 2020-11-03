@@ -34,26 +34,45 @@ char reset[10] = "\e[0m";
 // printf("%s" "%s" "%s\n", colors[i], placa[i], reset);
 // placa[i] é o que queremos printar
 
-pthread_mutex_t *myVectorMutex;  //Vetor de Mutex que sera feito para impedir a condição de corrida!
+pthread_mutex_t *myVectorMutex; //Vetor de Mutex que sera feito para impedir a condição de corrida!
+pthread_mutex_t myMutexPrint = PTHREAD_MUTEX_INITIALIZER;  //Mutex que sera feito para controlar o print!
 char **tabelaOutput;            //Variavel Global onde ira sofrer as modificações das threads!!
 int qtdThreads, qtdArquivos, qtdLinhas;
 
 /* 
 
 Para realizar essa questão primeiro lemos a quantidade de arquivos, quantidade de threads e a quantidade 
-de linhas que a tabela ira possuir, cada Thread ira ser responsavel pelo arquivo (ID % qtdThreads).
+de linhas que a tabela ira possuir, cada Thread ira ser responsavel pelo arquivo (ID % qtdThreads). Para
+garantir a espera de 2s para cada linha ser modificada novamente criamos thread dentro da thread, prestar
+atenção pois utilizamos uma variavel inteira para guardar os indices da threadWait, logo, cada thread
+principal so pode realizar 2147483647 operações de mudança na tabela(Overflow ira acarretar em segmentation fault)
 
 */
+
+void* waitThread(void *threadid){   //Função que será responsavel pelas ThreadsWait!
+    
+    int linhaWait = *((int *)threadid);
+    sleep(2);
+    pthread_mutex_unlock(&myVectorMutex[linhaWait]);
+    pthread_exit(NULL);
+
+}
 
 void* changeTable(void *threadid){  //Função que será realizada pelas Threads 
 
     int tid = *((int *)threadid);
     FILE * arquivoEntrada;
+    pthread_t *threadWait;
     char nomeArquivoInput[20];
     char nomeArquivoInputAux[20];
     char codigo[QTD_CHAR_LINHA + 1], localizacao[QTD_CHAR_LINHA + 1], horario[QTD_CHAR_LINHA + 1];
     char msgFormatada[QTD_CHAR_LINHA + 1];
-    int i, j, linhaAtual, modifiquei, qtdEspacos;
+    int i, j, linhaAtual, modifiquei, printei, qtdEspacos, threadWaitCreator;
+    int qtdThreadsWait = 1; //Precisa tomar cuidado!Numero muito grande de operações ira fazer travar o programa!
+    int *taskids;
+
+    threadWait = (pthread_t*) malloc(qtdThreadsWait*sizeof(pthread_t));    //Criando vetor que tera as threadsWait
+    taskids = (int *) malloc(qtdThreadsWait*sizeof(int));
 
     for(i = tid; i < qtdArquivos; i += qtdThreads){  //Cada Thread ficara responsavel pelo TID % qtdArquivo
 
@@ -91,30 +110,57 @@ void* changeTable(void *threadid){  //Função que será realizada pelas Threads
 
             strcat(msgFormatada, horario);
 
-            //printf("%s\n", msgFormatada);
-
             while(modifiquei == 0){     //Vai realizar a mudança na variavel global!
 
                 if ( pthread_mutex_trylock(&myVectorMutex[linhaAtual]) == 0){
                     
                     strcpy(tabelaOutput[linhaAtual], msgFormatada);
+                    printei = 0;
 
-                    system("clear");    //Realizando o print!
-                    for(j = 0; j < qtdLinhas; j++){
+                    while(printei == 0){    //Realizando o print da tabela!
 
-                        printf("%s" "%s" "%s\n", colors[j % QTD_COLORS], tabelaOutput[j], reset);
+                        if( pthread_mutex_trylock(&myMutexPrint) == 0){
+                            
+                            system("clear");
+                            for(j = 0; j < qtdLinhas; j++){
 
+                                printf("%s" "%s" "%s\n", colors[j % QTD_COLORS], tabelaOutput[j], reset);
+
+                            }
+
+                            pthread_mutex_unlock(&myMutexPrint);
+                            printei = 1;
+                        }
                    }
-                    
-                    sleep(2);
-                    pthread_mutex_unlock(&myVectorMutex[linhaAtual]);
+
+                    //Criando uma thread para ser responsavel por segurar a linha por 2s!
+                    taskids[qtdThreadsWait - 1] = linhaAtual;
+                    threadWaitCreator = pthread_create(&threadWait[qtdThreadsWait - 1], NULL, waitThread, (void *) &taskids[qtdThreadsWait - 1]);     
+
+                    if (threadWaitCreator){  //Garantir que a Thread foi criada corretamente!
+
+                        printf("ERRO CRIACAO DE THREADWAIT! %d\n", threadWaitCreator);         
+                        exit(-1);  
+
+                    }
+
+                    qtdThreadsWait++;
+                    threadWait = (pthread_t*) calloc(qtdThreadsWait,sizeof(pthread_t));    //Criando vetor que tera as threadsWait
+                    taskids = (int *) calloc(qtdThreadsWait, sizeof(int));        
                     modifiquei = 1;
+
                 }
             }
             
         }
 
         fclose(arquivoEntrada);
+    }
+
+    for(i = 0; i < qtdThreadsWait; i++){    //Esperar todas as threadsWait!
+
+        pthread_join(threadWait[i], NULL);
+
     }
 
     pthread_exit(NULL);

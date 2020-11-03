@@ -4,3 +4,13 @@ ABC123 Paris 19:00
 QWE497 Lisboa 18:50
 1
 GHD056 Frankfurt 20:00
+0
+XXX666 China 19:00
+2
+YYY999 Japao 18:50
+5
+ZZZ611 Paquistao 20:00
+5
+ZZZ611 Uzbequistao 20:00
+5
+ZZZ611 Cazaquistao 20:00
