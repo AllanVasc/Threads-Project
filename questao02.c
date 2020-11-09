@@ -187,7 +187,7 @@ int main (int argc, char *argv[]){
     printf("Digite a quantidade de Threads que serao usadas:\n");
     scanf("%d", &qtdThreads);
 
-    if( qtdThreads <= 1 && qtdThreads > qtdArquivos){
+    if( qtdThreads < 1 || qtdThreads > qtdArquivos){
 
         printf("ERRO: Quantidade de threads invalida!\n");
         exit(-1);
