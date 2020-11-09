@@ -1,0 +1,24 @@
+0
+XXX666 Brasil 19:00
+2
+YYY999 EUA 18:50
+5
+ZZZ611 Babilonia 20:00
+3
+ABC123 Franca 19:00
+7
+QWE497 Italia 18:50
+1
+GHD056 Holanda 20:00
+1
+GHD056 Canada 20:00
+1
+GHD056 Mexico 20:00
+1
+GHD056 AllanEhD+ 00:00
+2
+GHD056 Macio 00:00
+2
+GHD056 Isabel 00:00
+2
+GHD056 Amanda 00:00
