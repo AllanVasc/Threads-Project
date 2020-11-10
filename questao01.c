@@ -3,7 +3,7 @@
 Projeto de Threads 2020.3
 Data: 21/10/20
 Grupo:  Allan Soares Vasconcelos <asv>
-        Amanda Lima Lassere <all2>
+        Amanda Lima Lasserre <all2>
         Macio Monteiro de Meneses Jr <mmmj>
         Maria Isabel Fernandes dos Santos <mifs>
 
@@ -37,13 +37,22 @@ void* inc(void *threadid){  //Função que será realizada pelas Threads
   while(contador < 1000000){
 
     pthread_mutex_lock(&myMutex);
+
+    if (contador >= 1000000)
+    {
+      pthread_mutex_unlock(&myMutex);
+      break;
+    }
     contador++;
     //printf("Thread: [%d] colocou contador em: [%ld]\n", tid, contador); //Somente para Debugar!
 
     if(contador == 1000000){
 
       printf("A Thread: #%d atingiu o numero 1000000!\n", tid); 
-
+    }
+    if(contador > 1000000)
+    {
+      printf("ERRO: A Thread: #%d atingiu o numero %ld!\n", tid, contador); 
     }
 
     pthread_mutex_unlock(&myMutex);
@@ -74,6 +83,8 @@ int main (int argc, char *argv[]){
 
     }   
   }   
+  for(i = 0; i < qtdThreads; i++)pthread_join(threads[i], NULL);  
+  printf("Contador: %ld\n", contador); 
   pthread_exit(NULL);
 }
 
