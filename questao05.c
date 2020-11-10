@@ -3,7 +3,7 @@
 Projeto de Threads 2020.3
 Data: 31/10/20
 Grupo:  Allan Soares Vasconcelos <asv>
-        Amanda Lima Lassere <all2>
+        Amanda Lima Lasserre <all2>
         Macio Monteiro de Meneses Jr <mmmj>
         Maria Isabel Fernandes dos Santos <mifs>
 

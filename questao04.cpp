@@ -2,7 +2,7 @@
 Projeto de Threads 2020.3
 Data: 02/11/20
 Grupo:  Allan Soares Vasconcelos <asv>
-        Amanda Lima Lassere <all2>
+        Amanda Lima Lasserre <all2>
         Macio Monteiro de Meneses Jr <mmmj>
         Maria Isabel Fernandes dos Santos <mifs>
 
@@ -220,4 +220,4 @@ int main() {
     return 0;
 }
 
-// g++ -pthread questao04.cpp -o questao06 && ./questao06 //COMPILAR e EXECUTAR!
+// g++ -pthread questao04.cpp -o questao04 && ./questao04 //COMPILAR e EXECUTAR!
