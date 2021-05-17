@@ -1,7 +1,14 @@
-# Projeto-Threads
+# Threads-Project
 
-Projeto feito para a disciplina "Infraestrutura de Software",
-do curso de Engenharia da Computação do centro de informática da Universidade Federal de Pernambuco (UFPE),
-disciplina que aborda os principais temas dos sistemas operacionais modernos.
+This repository is a list of assembly exercises with the answers. It's a great way for beginners to practice assembly. 
 
-Nesse projeto, resolvemos uma lista de questões de programação usando threads.
+This list is part of the evaluation of a Computing Engineering's course called "Software Infraestructure", in the Federal University of Pernambuco - Brazil. 
+
+## Credits:
+
+The solutions were made by:
+ 
+    • Allan Soares Vasconcelos [https://github.com/AllanVasc] 
+    • Amanda Lima Lasserre [https://github.com/amandalasserre]
+    • Macio Meneses [https://github.com/maciomeneses]
+    • Maria Isabel Fernandes [https://github.com/misabelf]
