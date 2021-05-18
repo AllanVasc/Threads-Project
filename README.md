@@ -1,6 +1,6 @@
 # Threads-Project
 
-This repository is a list of assembly exercises with the answers. It's a great way for beginners to practice assembly. 
+This repository is a list of Threads exercises with the answers. It's a great way for beginners to practice and understand Threads. 
 
 This list is part of the evaluation of a Computing Engineering's course called "Software Infraestructure", in the Federal University of Pernambuco - Brazil. 
 
